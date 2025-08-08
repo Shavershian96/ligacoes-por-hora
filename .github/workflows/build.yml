@@ -1,9 +1,9 @@
-name: Build EXE with Icon and MSI
+name: Build e MSI do LigacoesPorHora
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   build:
@@ -16,57 +16,48 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: 3.11
 
       - name: Instalar dependências
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller matplotlib requests
+        run: pip install pyinstaller pandas matplotlib
 
       - name: Gerar EXE com PyInstaller
         run: |
-          pyinstaller --noconsole --onefile ligacoes.py --icon=icone.ico --name LigacoesPorHora
+          pyinstaller LigacoesPorHora.py --onefile --noconsole --icon=icone.ico --name LigacoesPorHora
 
       - name: Baixar Inno Setup
-      shell: powershell
-      run: |
-        Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
-        Start-Process .\is.exe -ArgumentList '/VERYSILENT', '/NORESTART', '/DIR="C:\InnoSetup"' -Wait
-
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
+          Start-Process .\is.exe -ArgumentList '/VERYSILENT', '/NORESTART', '/DIR="C:\InnoSetup"' -Wait
 
       - name: Criar script do Inno Setup
         run: |
-          echo '''
-          [Setup]
-          AppName=LigacoesPorHora
-          AppVersion=1.0
-          DefaultDirName={pf}\\LigacoesPorHora
-          OutputDir=dist
-          OutputBaseFilename=LigacoesPorHoraInstaller
-          Compression=lzma
-          SolidCompression=yes
-          SetupIconFile=icone.ico
-
-          [Files]
-          Source: "dist\\LigacoesPorHora.exe"; DestDir: "{app}"; Flags: ignoreversion
-
-          [Icons]
-          Name: "{group}\\LigacoesPorHora"; Filename: "{app}\\LigacoesPorHora.exe"
-          ''' > installer.iss
+          echo [Setup] > installer.iss
+          echo AppName=LigacoesPorHora >> installer.iss
+          echo AppVersion=1.0 >> installer.iss
+          echo DefaultDirName={pf}\LigacoesPorHora >> installer.iss
+          echo OutputDir=. >> installer.iss
+          echo OutputBaseFilename=LigacoesPorHora_Installer >> installer.iss
+          echo SetupIconFile=icone.ico >> installer.iss
+          echo [Files] >> installer.iss
+          echo Source: "dist\LigacoesPorHora.exe"; DestDir: "{app}"; Flags: ignoreversion >> installer.iss
+          echo [Icons] >> installer.iss
+          echo Name: "{group}\LigacoesPorHora"; Filename: "{app}\LigacoesPorHora.exe" >> installer.iss
 
       - name: Gerar Instalador MSI
         run: |
-          "C:\\InnoSetup\\ISCC.exe" installer.iss
+          "C:\InnoSetup\ISCC.exe" installer.iss
 
       - name: Upload do .EXE
         uses: actions/upload-artifact@v4
         with:
-          name: ligacoes-exe
+          name: LigacoesPorHora-EXE
           path: dist/LigacoesPorHora.exe
 
       - name: Upload do Instalador
         uses: actions/upload-artifact@v4
         with:
-          name: ligacoes-installer
-          path: dist/LigacoesPorHoraInstaller.exe
+          name: LigacoesPorHora-Installer
+          path: LigacoesPorHora_Installer.exe
 
