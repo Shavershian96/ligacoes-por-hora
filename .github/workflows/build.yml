@@ -23,7 +23,7 @@ jobs:
 
       - name: Gerar EXE com PyInstaller
         run: |
-          pyinstaller LigacoesPorHora.py --onefile --noconsole --icon=icone.ico --name LigacoesPorHora
+          pyinstaller Ligacoes.py --onefile --noconsole --icon=icone.ico --name LigacoesPorHora
 
       - name: Baixar Inno Setup
         shell: powershell
