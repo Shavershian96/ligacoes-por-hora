@@ -28,9 +28,11 @@ jobs:
           pyinstaller --noconsole --onefile ligacoes.py --icon=icone.ico --name LigacoesPorHora
 
       - name: Baixar Inno Setup
-        run: |
-          Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
-          Start-Process .\is.exe /VERYSILENT /NORESTART /DIR="C:\InnoSetup" -Wait
+      shell: powershell
+      run: |
+        Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
+        Start-Process .\is.exe -ArgumentList '/VERYSILENT', '/NORESTART', '/DIR="C:\InnoSetup"' -Wait
+
 
       - name: Criar script do Inno Setup
         run: |
