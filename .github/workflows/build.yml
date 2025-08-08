@@ -1,33 +1,34 @@
-name: build-windows-exe
-on: [push, workflow_dispatch]
+name: Build EXE for Windows
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Instalar dependências
         run: |
-          pip install -r requirements.txt
-          pip install pyinstaller
+          python -m pip install --upgrade pip
+          pip install pyinstaller requests matplotlib
 
-      - name: Build .exe
-        run: |
-          pyinstaller --onefile --name LigacoesPorHora ligacoes.py `
-            --hidden-import=tkinter `
-            --hidden-import=matplotlib.backends.backend_tkagg `
-            --collect-all matplotlib
+      - name: Compilar EXE com PyInstaller
+        run: pyinstaller --noconsole --onefile ligacoes.py
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v3
         with:
-          name: LigacoesPorHora
-          path: dist/LigacoesPorHora.exe
+          name: ligacoes-exe
+          path: dist/ligacoes.exe
 
