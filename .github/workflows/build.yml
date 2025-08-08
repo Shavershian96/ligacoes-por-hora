@@ -20,7 +20,7 @@ jobs:
 
       - name: Build .exe
         run: |
-          pyinstaller --onefile --noconsole --name LigacoesPorHora ligacoes.py `
+          pyinstaller --onefile --name LigacoesPorHora ligacoes.py `
             --hidden-import=tkinter `
             --hidden-import=matplotlib.backends.backend_tkagg `
             --collect-all matplotlib
