@@ -23,13 +23,13 @@ jobs:
 
       - name: Gerar EXE com PyInstaller
         run: |
-          pyinstaller Ligacoes.py --onefile --noconsole --icon=icone.ico --name LigacoesPorHora
+          pyinstaller ligacoes.py --onefile --noconsole --icon=icone.ico --name LigacoesPorHora
 
       - name: Baixar Inno Setup
         shell: powershell
         run: |
           Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
-          Start-Process .\is.exe -ArgumentList '/VERYSILENT', '/NORESTART', '/DIR="C:\InnoSetup"' -Wait
+          Start-Process .\is.exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/DIR="C:\InnoSetup"' -Wait
 
       - name: Criar script do Inno Setup
         run: |
@@ -37,6 +37,8 @@ jobs:
           echo AppName=LigacoesPorHora >> installer.iss
           echo AppVersion=1.0 >> installer.iss
           echo DefaultDirName={pf}\LigacoesPorHora >> installer.iss
+          echo DefaultGroupName=LigacoesPorHora >> installer.iss
+          echo UninstallDisplayIcon={app}\LigacoesPorHora.exe >> installer.iss
           echo OutputDir=. >> installer.iss
           echo OutputBaseFilename=LigacoesPorHora_Installer >> installer.iss
           echo SetupIconFile=icone.ico >> installer.iss
@@ -44,6 +46,9 @@ jobs:
           echo Source: "dist\LigacoesPorHora.exe"; DestDir: "{app}"; Flags: ignoreversion >> installer.iss
           echo [Icons] >> installer.iss
           echo Name: "{group}\LigacoesPorHora"; Filename: "{app}\LigacoesPorHora.exe" >> installer.iss
+          echo Name: "{commondesktop}\LigacoesPorHora"; Filename: "{app}\LigacoesPorHora.exe"; Tasks: desktopicon >> installer.iss
+          echo [Tasks] >> installer.iss
+          echo Name: desktopicon; Description: "Criar atalho na área de trabalho"; GroupDescription: "Opções adicionais:" >> installer.iss
 
       - name: Gerar Instalador MSI
         run: |
